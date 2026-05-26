@@ -1,54 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InfinityFirst — Pioneering AI Excellence</title>
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;800&display=swap" rel="stylesheet">
-
-  <!-- React + Babel -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; }
-    body { margin: 0; overflow: hidden; background: #FFFFFF; }
-
-    /* Entry animations — staggered for choreographed reveal */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes lineGrow {
-      from { transform: scaleX(0); }
-      to   { transform: scaleX(1); }
-    }
-    @keyframes canvasFadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-
-    .infinity-mark     { animation: fadeUp 1.0s ease-out 0.1s both; }
-    .meridian-title    { animation: fadeUp 0.9s ease-out 0.35s both; }
-    .meridian-tagline  { animation: fadeUp 0.7s ease-out 0.65s both; }
-    .meridian-line     { animation: lineGrow 0.6s ease-out 0.9s both; }
-    .meridian-subtitle { animation: fadeUp 0.6s ease-out 1.1s both; }
-    .meridian-footer   { animation: fadeUp 0.5s ease-out 1.3s both; }
-    .network-canvas    { animation: canvasFadeIn 1.8s ease-out 0.2s both; }
-
-
-  </style>
-
-  <!-- tweaks-panel -->
-  <script type="text/babel">
 
 // tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "palette": ["#D97757", "#29261b", "#f6f4ef"],
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        options={['#D97757', '#2A6FDB', '#1F8A5B', '#7A5AE0']}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakColor  label="Palette" value={t.palette}
+//                        options={[['#D97757', '#29261b', '#f6f4ef'],
+//                                  ['#475569', '#0f172a', '#f1f5f9']]}
+//                        onChange={(v) => setTweak('palette', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
 const __TWEAKS_STYLE = `
   .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
     max-height:calc(100vh - 32px);display:flex;flex-direction:column;
@@ -79,9 +76,11 @@ const __TWEAKS_STYLE = `
     color:rgba(41,38,27,.72)}
   .twk-lbl>span:first-child{font-weight:500}
   .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
   .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
     color:rgba(41,38,27,.45);padding:10px 0 0}
   .twk-sect:first-child{padding-top:0}
+
   .twk-field{appearance:none;box-sizing:border-box;width:100%;min-width:0;height:26px;padding:0 8px;
     border:.5px solid rgba(0,0,0,.1);border-radius:7px;
     background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
@@ -89,6 +88,7 @@ const __TWEAKS_STYLE = `
   select.twk-field{padding-right:22px;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
     background-repeat:no-repeat;background-position:right 8px center}
+
   .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
     border-radius:999px;background:rgba(0,0,0,.12);outline:none}
   .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
@@ -96,6 +96,7 @@ const __TWEAKS_STYLE = `
     border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
   .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
     background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
   .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
     background:rgba(0,0,0,.06);user-select:none}
   .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
@@ -106,12 +107,14 @@ const __TWEAKS_STYLE = `
     background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
     border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
     overflow-wrap:anywhere}
+
   .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
     background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
   .twk-toggle[data-on="1"]{background:#34c759}
   .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
     background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
   .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
   .twk-num{display:flex;align-items:center;box-sizing:border-box;min-width:0;height:26px;padding:0 0 0 8px;
     border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
   .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
@@ -122,17 +125,20 @@ const __TWEAKS_STYLE = `
   .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
     -webkit-appearance:none;margin:0}
   .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
   .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
     background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
   .twk-btn:hover{background:rgba(0,0,0,.88)}
   .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
   .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
   .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
     border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
     background:transparent;flex-shrink:0}
   .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
   .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
   .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+
   .twk-chips{display:flex;gap:6px}
   .twk-chip{position:relative;appearance:none;flex:1;min-width:0;height:46px;
     padding:0;border:0;border-radius:6px;overflow:hidden;cursor:default;
@@ -150,18 +156,33 @@ const __TWEAKS_STYLE = `
     filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
 `;
 
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
 function useTweaks(defaults) {
   const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
   const setTweak = React.useCallback((keyOrEdits, val) => {
     const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
       ? keyOrEdits : { [keyOrEdits]: val };
     setValues((prev) => ({ ...prev, ...edits }));
     window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    // Same-window signal so in-page listeners (deck-stage rail thumbnails)
+    // can react — the parent message only reaches the host, not peers.
     window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
   }, []);
   return [values, setTweak];
 }
 
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
 function TweaksPanel({ title = 'Tweaks', children }) {
   const [open, setOpen] = React.useState(false);
   const dragRef = React.useRef(null);
@@ -252,6 +273,8 @@ function TweaksPanel({ title = 'Tweaks', children }) {
   );
 }
 
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
 function TweakSection({ label, children }) {
   return (
     <>
@@ -272,6 +295,8 @@ function TweakRow({ label, value, children, inline = false }) {
     </div>
   );
 }
+
+// ── Controls ────────────────────────────────────────────────────────────────
 
 function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
   return (
@@ -296,13 +321,22 @@ function TweakToggle({ label, value, onChange }) {
 function TweakRadio({ label, value, options, onChange }) {
   const trackRef = React.useRef(null);
   const [dragging, setDragging] = React.useState(false);
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
   const valueRef = React.useRef(value);
   valueRef.current = value;
 
+  // Segments wrap mid-word once per-segment width runs out. The track is
+  // ~248px (280 panel − 28 body pad − 4 seg pad), each button loses 12px
+  // to its own padding, and 11.5px system-ui averages ~6.3px/char — so 2
+  // options fit ~16 chars each, 3 fit ~10. Past that (or >3 options), fall
+  // back to a dropdown rather than wrap.
   const labelLen = (o) => String(typeof o === 'object' ? o.label : o).length;
   const maxLen = options.reduce((m, o) => Math.max(m, labelLen(o)), 0);
   const fitsAsSegments = maxLen <= ({ 2: 16, 3: 10 }[options.length] ?? 0);
   if (!fitsAsSegments) {
+    // <select> emits strings — map back to the original option value so the
+    // fallback stays type-preserving (numbers, booleans) like the segment path.
     const resolve = (s) => {
       const m = options.find((o) => String(typeof o === 'object' ? o.value : o) === s);
       return m === undefined ? s : typeof m === 'object' ? m.value : m;
@@ -413,6 +447,9 @@ function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) 
   );
 }
 
+// Relative-luminance contrast pick — checkmarks drawn over a swatch need to
+// read on both #111 and #fafafa without per-option configuration. Hex input
+// only (#rgb / #rrggbb); named or rgb()/hsl() colors fall through to "light".
 function __twkIsLight(hex) {
   const h = String(hex).replace('#', '');
   const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h.padEnd(6, '0');
@@ -430,6 +467,12 @@ const __TwkCheck = ({ light }) => (
   </svg>
 );
 
+// TweakColor — curated color/palette picker. Each option is either a single
+// hex string or an array of 1-5 hex strings; the card adapts — a lone color
+// renders solid, a palette renders colors[0] as the hero (left ~2/3) with the
+// rest stacked in a sharp column on the right. onChange emits the
+// option in the shape it was passed (string stays string, array stays array).
+// Without options it falls back to the native color input for back-compat.
 function TweakColor({ label, value, options, onChange }) {
   if (!options || !options.length) {
     return (
@@ -440,6 +483,9 @@ function TweakColor({ label, value, options, onChange }) {
       </div>
     );
   }
+  // Native <input type=color> emits lowercase hex per the HTML spec, so
+  // compare case-insensitively. String() guards JSON.stringify(undefined),
+  // which returns the primitive undefined (no .toLowerCase).
   const key = (o) => String(JSON.stringify(o)).toLowerCase();
   const cur = key(value);
   return (
@@ -482,297 +528,3 @@ Object.assign(window, {
   TweakSlider, TweakToggle, TweakRadio, TweakSelect,
   TweakText, TweakNumber, TweakColor, TweakButton,
 });
-  </script>
-
-  <!-- meridian-page -->
-  <script type="text/babel">
-const { useState, useEffect, useRef, useMemo } = React;
-
-const hexToRgb = (hex) => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return { r, g, b, str: `${r}, ${g}, ${b}` };
-};
-
-const lerpColor = (a, b, t) => ({
-  r: Math.round(a.r + (b.r - a.r) * t),
-  g: Math.round(a.g + (b.g - a.g) * t),
-  b: Math.round(a.b + (b.b - a.b) * t),
-});
-const rgbStr = (c) => `${c.r}, ${c.g}, ${c.b}`;
-
-const PALETTE = {
-  cyan:    '#38BDF8',
-  blue:    '#2563EB',
-  purple:  '#8B5CF6',
-  magenta: '#D946EF',
-};
-const GRADIENT_STOPS = [
-  hexToRgb(PALETTE.cyan),
-  hexToRgb(PALETTE.blue),
-  hexToRgb(PALETTE.purple),
-  hexToRgb(PALETTE.magenta),
-];
-
-const sampleGradient = (t) => {
-  const clamped = Math.max(0, Math.min(1, t));
-  const seg = clamped * (GRADIENT_STOPS.length - 1);
-  const i = Math.floor(seg);
-  const f = seg - i;
-  if (i >= GRADIENT_STOPS.length - 1) return GRADIENT_STOPS[GRADIENT_STOPS.length - 1];
-  return lerpColor(GRADIENT_STOPS[i], GRADIENT_STOPS[i + 1], f);
-};
-
-const bgColorMap = {
-  White:   '#FFFFFF',
-  Cream:   '#FAF7F0',
-  Frost:   '#F0F2F8',
-};
-const densityMap = { Sparse: 40, Medium: 65, Dense: 95 };
-
-const GradientNetwork = ({ density, bgTone }) => {
-  const canvasRef = useRef(null);
-  const animRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let w, h;
-
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      w = window.innerWidth; h = window.innerHeight;
-      canvas.width = w * dpr; canvas.height = h * dpr;
-      canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    const count = densityMap[density] || 48;
-    const hubCount = Math.max(4, Math.floor(count * 0.1));
-    const particles = [];
-    for (let i = 0; i < count; i++) {
-      const isHub = i < hubCount;
-      const gradPos = Math.random();
-      particles.push({
-        x: Math.random() * w, y: Math.random() * h,
-        vx: (Math.random() - 0.5) * (isHub ? 0.12 : 0.22),
-        vy: (Math.random() - 0.5) * (isHub ? 0.12 : 0.22),
-        r: isHub ? 2.5 + Math.random() * 1.5 : Math.random() * 1.6 + 0.8,
-        isHub, phase: Math.random() * Math.PI * 2,
-        gradPos,
-      });
-    }
-
-    const connDist = 160;
-
-    const draw = (time) => {
-      ctx.clearRect(0, 0, w, h);
-      const cx = w / 2, cy = h / 2;
-
-      const grad1 = ctx.createRadialGradient(cx, cy - 40, 0, cx, cy - 40, 420);
-      grad1.addColorStop(0, 'rgba(37, 99, 235, 0.035)');
-      grad1.addColorStop(0.4, 'rgba(139, 92, 246, 0.02)');
-      grad1.addColorStop(0.7, 'rgba(217, 70, 239, 0.008)');
-      grad1.addColorStop(1, 'transparent');
-      ctx.fillStyle = grad1;
-      ctx.fillRect(0, 0, w, h);
-
-      const rings = [140, 260, 400];
-      rings.forEach((r, ri) => {
-        const c = sampleGradient(ri / (rings.length - 1));
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${rgbStr(c)}, 0.06)`;
-        ctx.lineWidth = 0.7;
-        ctx.stroke();
-      });
-
-      ctx.save();
-      ctx.strokeStyle = 'rgba(139, 92, 246, 0.03)';
-      ctx.lineWidth = 0.5;
-      ctx.beginPath(); ctx.moveTo(cx - 500, cy); ctx.lineTo(cx + 500, cy); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx, cy - 350); ctx.lineTo(cx, cy + 350); ctx.stroke();
-      ctx.restore();
-
-      const m = 24, bl = 18;
-      ctx.save();
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.06)';
-      ctx.lineWidth = 0.7;
-      ctx.beginPath(); ctx.moveTo(m, m+bl); ctx.lineTo(m, m); ctx.lineTo(m+bl, m); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(w-m-bl, m); ctx.lineTo(w-m, m); ctx.lineTo(w-m, m+bl); ctx.stroke();
-      ctx.strokeStyle = 'rgba(217, 70, 239, 0.06)';
-      ctx.beginPath(); ctx.moveTo(m, h-m-bl); ctx.lineTo(m, h-m); ctx.lineTo(m+bl, h-m); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(w-m-bl, h-m); ctx.lineTo(w-m, h-m); ctx.lineTo(w-m, h-m-bl); ctx.stroke();
-      ctx.restore();
-
-      for (const p of particles) {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < -30) p.x = w + 30;
-        if (p.x > w + 30) p.x = -30;
-        if (p.y < -30) p.y = h + 30;
-        if (p.y > h + 30) p.y = -30;
-
-        const pulse = p.isHub ? Math.sin(time * 0.0008 + p.phase) * 0.5 + 0.5 : 0;
-        const radius = p.isHub ? p.r + pulse * 1.8 : p.r;
-        const alpha = p.isHub ? 0.35 + pulse * 0.25 : 0.3;
-        const shift = (Math.sin(time * 0.0002 + p.phase) * 0.5 + 0.5);
-        const col = sampleGradient((p.gradPos + shift * 0.3) % 1);
-        const colStr = rgbStr(col);
-
-        if (p.isHub) {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, radius + 12, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${colStr}, ${0.03 + pulse * 0.04})`;
-          ctx.fill();
-        }
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${colStr}, ${alpha})`;
-        ctx.fill();
-      }
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < connDist) {
-            const strength = 1 - dist / connDist;
-            const boost = particles[i].isHub || particles[j].isHub ? 1.5 : 1;
-            const mid = (particles[i].gradPos + particles[j].gradPos) / 2;
-            const col = sampleGradient(mid);
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(${rgbStr(col)}, ${strength * 0.12 * boost})`;
-            ctx.lineWidth = particles[i].isHub || particles[j].isHub ? 0.8 : 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-
-      animRef.current = requestAnimationFrame(draw);
-    };
-
-    animRef.current = requestAnimationFrame(draw);
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(animRef.current);
-    };
-  }, [density]);
-
-  return (
-    <canvas ref={canvasRef} className="network-canvas"
-      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
-    ></canvas>
-  );
-};
-
-const MeridianPage = ({ tweaks }) => {
-  const bg = bgColorMap[tweaks.bgTone] || '#FFFFFF';
-
-  return (
-    <div style={{
-      width: '100vw', minHeight: '100vh', backgroundColor: bg,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      position: 'relative', overflow: 'hidden',
-      fontFamily: "'Manrope', sans-serif",
-      transition: 'background-color 0.6s ease',
-    }}>
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: 'radial-gradient(circle, rgba(37, 99, 235, 0.04) 1px, transparent 1px)',
-        backgroundSize: '36px 36px',
-        pointerEvents: 'none',
-      }}></div>
-
-      <GradientNetwork density={tweaks.density} bgTone={tweaks.bgTone} />
-
-      <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        position: 'relative', zIndex: 1,
-      }}>
-        <div className="infinity-mark" style={{
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
-        }}>
-          <img
-            src="logo.png"
-            alt="InfinityFirst Logo"
-            style={{
-              width: 'clamp(200px, 32vw, 340px)',
-              height: 'auto',
-              filter: 'drop-shadow(0 0 30px rgba(56, 189, 248, 0.08)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.06))',
-            }}
-          />
-        </div>
-
-        <div className="meridian-line" style={{
-          width: '60px', height: '2px',
-          background: 'linear-gradient(90deg, #38BDF8, #8B5CF6, #D946EF)',
-          marginTop: '28px', marginBottom: '24px',
-          borderRadius: '1px',
-        }}></div>
-
-        <p className="meridian-subtitle" style={{
-          fontSize: '11px', fontWeight: 500,
-          color: '#8B5CF6', letterSpacing: '0.35em',
-          textTransform: 'uppercase',
-        }}>Coming Soon</p>
-      </div>
-
-      <p className="meridian-footer" style={{
-        position: 'absolute', bottom: '24px',
-        fontSize: '9px', fontWeight: 400,
-        color: 'rgba(0,0,0,0.2)', letterSpacing: '0.15em',
-      }}>© 2026 InfinityFirst</p>
-    </div>
-  );
-};
-
-Object.assign(window, { MeridianPage, GradientNetwork });
-  </script>
-
-  <!-- App -->
-  <script type="text/babel">
-    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-      "bgTone": "White",
-      "density": "Dense"
-    }/*EDITMODE-END*/;
-
-    const App = () => {
-      const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
-
-      return (
-        <>
-          <MeridianPage tweaks={tweaks} />
-          <TweaksPanel>
-            <TweakSection title="Atmosphere">
-              <TweakRadio
-                label="Background"
-                value={tweaks.bgTone}
-                onChange={(v) => setTweak('bgTone', v)}
-                options={['White', 'Cream', 'Frost']}
-              />
-              <TweakRadio
-                label="Particle Density"
-                value={tweaks.density}
-                onChange={(v) => setTweak('density', v)}
-                options={['Sparse', 'Medium', 'Dense']}
-              />
-            </TweakSection>
-          </TweaksPanel>
-        </>
-      );
-    };
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-  </script>
-</head>
-<body>
-  <div id="root"></div>
-</body>
-</html>
