@@ -192,7 +192,7 @@ const GradientNetwork = ({ density, bgTone }) => {
 
   return (
     <canvas ref={canvasRef} className="network-canvas"
-      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+      style={ { position: 'absolute', inset: 0, pointerEvents: 'none' }}
     ></canvas>
   );
 };
@@ -205,7 +205,7 @@ const MeridianPage = ({ tweaks }) => {
   const bg = bgColorMap[tweaks.bgTone] || '#FFFFFF';
 
   return (
-    <div style={{
+    <div style={ {
       width: '100vw', minHeight: '100vh', backgroundColor: bg,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       position: 'relative', overflow: 'hidden',
@@ -213,7 +213,7 @@ const MeridianPage = ({ tweaks }) => {
       transition: 'background-color 0.6s ease',
     }}>
       {/* Subtle dot grid */}
-      <div style={{
+      <div style={ {
         position: 'absolute', inset: 0,
         backgroundImage: 'radial-gradient(circle, rgba(37, 99, 235, 0.04) 1px, transparent 1px)',
         backgroundSize: '36px 36px',
@@ -223,18 +223,18 @@ const MeridianPage = ({ tweaks }) => {
       <GradientNetwork density={tweaks.density} bgTone={tweaks.bgTone} />
 
       {/* Central content */}
-      <div style={{
+      <div style={ {
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         position: 'relative', zIndex: 1,
       }}>
         {/* Logo */}
-        <div className="infinity-mark" style={{
+        <div className="infinity-mark" style={ {
           display: 'flex', justifyContent: 'center', alignItems: 'center',
         }}>
           <img
             src="logo.png"
             alt="InfinityFirst Logo"
-            style={{
+            style={ {
               width: 'clamp(200px, 32vw, 340px)',
               height: 'auto',
               filter: 'drop-shadow(0 0 30px rgba(56, 189, 248, 0.08)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.06))',
@@ -243,7 +243,7 @@ const MeridianPage = ({ tweaks }) => {
         </div>
 
         {/* Gradient accent line */}
-        <div className="meridian-line" style={{
+        <div className="meridian-line" style={ {
           width: '60px', height: '2px',
           background: 'linear-gradient(90deg, #38BDF8, #8B5CF6, #D946EF)',
           marginTop: '28px', marginBottom: '24px',
@@ -251,7 +251,7 @@ const MeridianPage = ({ tweaks }) => {
         }}></div>
 
         {/* Status text */}
-        <p className="meridian-subtitle" style={{
+        <p className="meridian-subtitle" style={ {
           fontSize: '11px', fontWeight: 500,
           color: '#8B5CF6', letterSpacing: '0.35em',
           textTransform: 'uppercase',
@@ -259,7 +259,7 @@ const MeridianPage = ({ tweaks }) => {
       </div>
 
       {/* Footer */}
-      <p className="meridian-footer" style={{
+      <p className="meridian-footer" style={ {
         position: 'absolute', bottom: '24px',
         fontSize: '9px', fontWeight: 400,
         color: 'rgba(0,0,0,0.2)', letterSpacing: '0.15em',

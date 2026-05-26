@@ -20,7 +20,7 @@
 //   function App() {
 //     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
 //     return (
-//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//       <div style={ { fontSize: t.fontSize, color: t.primaryColor }}>
 //         Hello
 //         <TweaksPanel>
 //           <TweakSection label="Typography" />
@@ -258,7 +258,7 @@ function TweaksPanel({ title = 'Tweaks', children }) {
     <>
       <style>{__TWEAKS_STYLE}</style>
       <div ref={dragRef} className="twk-panel" data-omelette-chrome=""
-           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+           style={ { right: offsetRef.current.x, bottom: offsetRef.current.y }}>
         <div className="twk-hd" onMouseDown={onDragStart}>
           <b>{title}</b>
           <button className="twk-x" aria-label="Close tweaks"
@@ -378,7 +378,7 @@ function TweakRadio({ label, value, options, onChange }) {
       <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
            className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
         <div className="twk-seg-thumb"
-             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+             style={ { left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
                       width: `calc((100% - 4px) / ${n})` }} />
         {opts.map((o) => (
           <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
@@ -500,11 +500,11 @@ function TweakColor({ label, value, options, onChange }) {
             <button key={i} type="button" className="twk-chip" role="radio"
                     aria-checked={on} data-on={on ? '1' : '0'}
                     aria-label={colors.join(', ')} title={colors.join(' · ')}
-                    style={{ background: hero }}
+                    style={ { background: hero }}
                     onClick={() => onChange(o)}>
               {sup.length > 0 && (
                 <span>
-                  {sup.map((c, j) => <i key={j} style={{ background: c }} />)}
+                  {sup.map((c, j) => <i key={j} style={ { background: c }} />)}
                 </span>
               )}
               {on && <__TwkCheck light={__twkIsLight(hero)} />}
