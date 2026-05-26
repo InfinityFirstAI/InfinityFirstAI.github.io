@@ -230,16 +230,86 @@ const MeridianPage = ({ tweaks }) => {
         {/* Logo */}
         <div className="infinity-mark" style={ {
           display: 'flex', justifyContent: 'center', alignItems: 'center',
+          position: 'relative', width: 'clamp(200px, 32vw, 340px)',
         }}>
           <img
             src="logo.png"
             alt="InfinityFirst Logo"
             style={ {
-              width: 'clamp(200px, 32vw, 340px)',
+              width: '100%',
               height: 'auto',
               filter: 'drop-shadow(0 0 30px rgba(56, 189, 248, 0.08)) drop-shadow(0 0 60px rgba(139, 92, 246, 0.06))',
             }}
           />
+          <svg
+            className="infinity-traveler"
+            viewBox="0 0 1024 1024"
+            aria-hidden="true"
+            style={ {
+              position: 'absolute', inset: 0,
+              width: '100%', height: '100%',
+              overflow: 'visible', pointerEvents: 'none',
+            }}
+          >
+            <defs>
+              <filter id="traveler-glow" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feColorMatrix
+                  in="blur"
+                  type="matrix"
+                  values="0 0 0 0 0.22  0 0 0 0 0.74  0 0 0 0 0.97  0 0 0 0.9 0"
+                  result="glow"
+                />
+                <feMerge>
+                  <feMergeNode in="glow" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <radialGradient id="traveler-fill" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stopColor="#FFFFFF" />
+                <stop offset="45%" stopColor="#38BDF8">
+                  <animate
+                    attributeName="stop-color"
+                    values="#38BDF8;#2563EB;#8B5CF6;#D946EF;#38BDF8"
+                    dur="7.25s"
+                    repeatCount="indefinite"
+                  />
+                </stop>
+                <stop offset="100%" stopColor="#D946EF">
+                  <animate
+                    attributeName="stop-color"
+                    values="#2563EB;#8B5CF6;#D946EF;#38BDF8;#2563EB"
+                    dur="7.25s"
+                    repeatCount="indefinite"
+                  />
+                </stop>
+              </radialGradient>
+            </defs>
+            <g filter="url(#traveler-glow)">
+              <circle r="24" fill="#38BDF8" opacity="0.1">
+                <animate
+                  attributeName="fill"
+                  values="#38BDF8;#2563EB;#8B5CF6;#D946EF;#38BDF8"
+                  dur="7.25s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+              <circle r="12" fill="url(#traveler-fill)">
+                <animate
+                  attributeName="fill-opacity"
+                  values="0.94;1;0.94"
+                  dur="1.8s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+              <circle cx="-2" cy="-3" r="3.5" fill="#FFFFFF" opacity="0.86" />
+              <animateMotion
+                dur="7.25s"
+                repeatCount="indefinite"
+                path="M512 556 C472 526 440 500 400 485 C358 463 300 438 240 466 C204 483 180 520 180 553 C180 586 204 623 240 640 C300 668 358 649 400 627 C440 609 472 586 512 556 C552 526 584 500 624 480 C666 458 724 438 784 469 C820 486 844 520 844 553 C844 586 820 620 784 638 C724 668 666 649 624 629 C584 608 552 586 512 556"
+              />
+            </g>
+          </svg>
         </div>
 
         {/* Gradient accent line */}
